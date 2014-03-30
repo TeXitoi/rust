@@ -267,6 +267,10 @@ case $CFG_OSTYPE in
         CFG_OSTYPE=unknown-freebsd
         ;;
 
+    OpenBSD)
+        CFG_OSTYPE=unknown-openbsd
+        ;;
+
     Darwin)
         CFG_OSTYPE=apple-darwin
         ;;
@@ -592,7 +596,7 @@ then
         }
         # check that gcc, cc and g++ all point to the same compiler.
         # note that for xcode 5, g++ points to clang, not clang++
-        if !((chk_cc gcc clang  && chk_cc g++ clang) ||
+        if ! ((chk_cc gcc clang  && chk_cc g++ clang) ||
             (chk_cc gcc gcc  &&( chk_cc g++ g++ || chk g++ gcc))) then
             err "the gcc and g++ in your path point to different compilers.
 Check which versions are in your path with  cc --version and g++ --version.
