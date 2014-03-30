@@ -632,6 +632,16 @@ pub fn errno() -> int {
         }
     }
 
+    #[cfg(target_os = "openbsd")]
+    fn errno_location() -> *c_int {
+        extern {
+            fn __errno() -> *c_int;
+        }
+        unsafe {
+            __errno()
+        }
+    }
+
     #[cfg(target_os = "linux")]
     #[cfg(target_os = "android")]
     fn errno_location() -> *c_int {
@@ -672,6 +682,7 @@ pub fn error_string(errnum: uint) -> ~str {
         #[cfg(target_os = "macos")]
         #[cfg(target_os = "android")]
         #[cfg(target_os = "freebsd")]
+        #[cfg(target_os = "openbsd")]
         fn strerror_r(errnum: c_int, buf: *mut c_char, buflen: libc::size_t)
                       -> c_int {
             extern {
@@ -819,6 +830,7 @@ fn real_args_as_bytes() -> ~[~[u8]] {
 #[cfg(target_os = "linux")]
 #[cfg(target_os = "android")]
 #[cfg(target_os = "freebsd")]
+#[cfg(target_os = "openbsd")]
 fn real_args_as_bytes() -> ~[~[u8]] {
     use rt;
 
@@ -1305,6 +1317,9 @@ pub mod consts {
     #[cfg(target_os = "freebsd")]
     pub use os::consts::freebsd::*;
 
+    #[cfg(target_os = "openbsd")]
+    pub use os::consts::openbsd::*;
+
     #[cfg(target_os = "linux")]
     pub use os::consts::linux::*;
 
@@ -1372,6 +1387,33 @@ pub mod consts {
         /// A string describing the specific operating system in use: in this
         /// case, `freebsd`.
         pub static SYSNAME: &'static str = "freebsd";
+
+        /// Specifies the filename prefix used for shared libraries on this
+        /// platform: in this case, `lib`.
+        pub static DLL_PREFIX: &'static str = "lib";
+
+        /// Specifies the filename suffix used for shared libraries on this
+        /// platform: in this case, `.so`.
+        pub static DLL_SUFFIX: &'static str = ".so";
+
+        /// Specifies the file extension used for shared libraries on this
+        /// platform that goes after the dot: in this case, `so`.
+        pub static DLL_EXTENSION: &'static str = "so";
+
+        /// Specifies the filename suffix used for executable binaries on this
+        /// platform: in this case, the empty string.
+        pub static EXE_SUFFIX: &'static str = "";
+
+        /// Specifies the file extension, if any, used for executable binaries
+        /// on this platform: in this case, the empty string.
+        pub static EXE_EXTENSION: &'static str = "";
+    }
+
+    /// Constants for OpenBSD systems.
+    pub mod openbsd {
+        /// A string describing the specific operating system in use: in this
+        /// case, `openbsd`.
+        pub static SYSNAME: &'static str = "openbsd";
 
         /// Specifies the filename prefix used for shared libraries on this
         /// platform: in this case, `lib`.

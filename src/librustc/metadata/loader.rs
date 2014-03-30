@@ -28,7 +28,7 @@ use std::c_str::ToCStr;
 use std::cast;
 use std::cmp;
 use std::io;
-use std::os::consts::{macos, freebsd, linux, android, win32};
+use std::os::consts::{macos, freebsd, openbsd, linux, android, win32};
 use std::ptr;
 use std::rc::Rc;
 use std::slice;
@@ -43,7 +43,8 @@ pub enum Os {
     OsWin32,
     OsLinux,
     OsAndroid,
-    OsFreebsd
+    OsFreebsd,
+    OsOpenbsd
 }
 
 pub struct HashMismatch {
@@ -395,6 +396,7 @@ impl<'a> Context<'a> {
             OsLinux => (linux::DLL_PREFIX, linux::DLL_SUFFIX),
             OsAndroid => (android::DLL_PREFIX, android::DLL_SUFFIX),
             OsFreebsd => (freebsd::DLL_PREFIX, freebsd::DLL_SUFFIX),
+            OsOpenbsd => (openbsd::DLL_PREFIX, openbsd::DLL_SUFFIX),
         }
     }
 }
@@ -519,7 +521,8 @@ pub fn meta_section_name(os: Os) -> &'static str {
         OsWin32 => ".note.rustc",
         OsLinux => ".note.rustc",
         OsAndroid => ".note.rustc",
-        OsFreebsd => ".note.rustc"
+        OsFreebsd => ".note.rustc",
+        OsOpenbsd => ".note.rustc"
     }
 }
 
@@ -529,7 +532,8 @@ pub fn read_meta_section_name(os: Os) -> &'static str {
         OsWin32 => ".note.rustc",
         OsLinux => ".note.rustc",
         OsAndroid => ".note.rustc",
-        OsFreebsd => ".note.rustc"
+        OsFreebsd => ".note.rustc",
+        OsOpenbsd => ".note.rustc"
     }
 }
 

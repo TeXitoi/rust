@@ -28,7 +28,7 @@ use util::sha2::{Digest, Sha256};
 
 use std::c_str::{ToCStr, CString};
 use std::char;
-use std::os::consts::{macos, freebsd, linux, android, win32};
+use std::os::consts::{macos, freebsd, openbsd, linux, android, win32};
 use std::ptr;
 use std::str;
 use std::io;
@@ -818,6 +818,7 @@ pub fn filename_for_input(sess: &Session, crate_type: session::CrateType,
                 abi::OsLinux => (linux::DLL_PREFIX, linux::DLL_SUFFIX),
                 abi::OsAndroid => (android::DLL_PREFIX, android::DLL_SUFFIX),
                 abi::OsFreebsd => (freebsd::DLL_PREFIX, freebsd::DLL_SUFFIX),
+                abi::OsOpenbsd => (openbsd::DLL_PREFIX, openbsd::DLL_SUFFIX),
             };
             out_filename.with_filename(format!("{}{}{}", prefix, libname, suffix))
         }
