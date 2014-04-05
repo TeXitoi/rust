@@ -270,6 +270,7 @@ mod imp {
     type pthread_condattr_t = libc::c_void;
 
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     mod os {
         use libc;
 
