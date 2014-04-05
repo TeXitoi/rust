@@ -830,6 +830,204 @@ pub mod types {
         }
     }
 
+    #[cfg(target_os = "openbsd")]
+    pub mod os {
+        pub mod common {
+            pub mod posix01 {
+                use libc::types::common::c95::{c_void};
+                use libc::types::os::arch::c95::{c_char, c_int,
+                                                 time_t, suseconds_t, c_long};
+
+                pub type pthread_t = *c_void;
+
+                pub struct glob_t {
+                    gl_pathc: c_int,
+                    gl_matchc: c_int,
+                    gl_offs: c_int,
+                    gl_flags: c_int,
+                    gl_pathv:  **c_char,
+                    gl_statv: *c_void,
+                    gl_errfunc: *c_void,
+
+                    gl_closedir: *c_void,
+                    gl_readdir: *c_void,
+                    gl_opendir: *c_void,
+                    gl_lstat: *c_void,
+                    gl_stat: *c_void,
+                }
+
+                pub struct timeval {
+                    tv_sec: time_t,
+                    tv_usec: suseconds_t,
+                }
+
+                pub struct timespec {
+                    tv_sec: time_t,
+                    tv_nsec: c_long,
+                }
+
+                pub struct timezone {
+                    tz_minuteswest: c_int,
+                    tz_dsttime: c_int,
+                }
+
+                pub type sighandler_t = *c_void;
+            }
+            pub mod bsd44 {
+                use libc::types::os::arch::c95::{c_char, c_uchar, c_int, c_uint};
+
+                pub type socklen_t = u32;
+                pub type sa_family_t = u8;
+                pub type in_port_t = u16;
+                pub type in_addr_t = u32;
+                pub struct sockaddr {
+                    sa_len: u8,
+                    sa_family: sa_family_t,
+                    sa_data: [c_char, ..14],
+                }
+                pub struct sockaddr_storage {
+                    ss_len: u8,
+                    ss_family: sa_family_t,
+                    __ss_pad1: [c_uchar, ..6],
+                    __ss_pad2: u64,
+                    __ss_pad3: [c_uchar, ..240],
+                }
+                pub struct sockaddr_in {
+                    sin_len: u8,
+                    sin_family: sa_family_t,
+                    sin_port: in_port_t,
+                    sin_addr: in_addr,
+                    sin_zero: [i8, ..8],
+                }
+                pub struct in_addr {
+                    s_addr: in_addr_t,
+                }
+                pub struct sockaddr_in6 {
+                    sin6_len: u8,
+                    sin6_family: sa_family_t,
+                    sin6_port: in_port_t,
+                    sin6_flowinfo: u32,
+                    sin6_addr: in6_addr,
+                    sin6_scope_id: u32,
+                }
+                pub struct in6_addr {
+                    s6_addr: [u32, ..4]
+                }
+                pub struct ip_mreq {
+                    imr_multiaddr: in_addr,
+                    imr_interface: in_addr,
+                }
+                // can't find
+                /*
+                pub struct ip6_mreq {
+                    ipv6mr_multiaddr: in6_addr,
+                    ipv6mr_interface: c_uint,
+                }
+                */
+                pub struct addrinfo {
+                    ai_flags: c_int,
+                    ai_family: c_int,
+                    ai_socktype: c_int,
+                    ai_protocol: c_int,
+                    ai_addrlen: socklen_t,
+                    ai_addr: *sockaddr,
+                    ai_canonname: *c_char,
+                    ai_next: *addrinfo
+                }
+                pub struct sockaddr_un {
+                    sun_len: c_uchar,
+                    sun_family: sa_family_t,
+                    sun_path: [c_char, ..104]
+                }
+            }
+        }
+
+        #[cfg(target_arch = "x86_64")]
+        pub mod arch {
+            pub mod c95 {
+                pub type c_char = i8;
+                pub type c_schar = i8;
+                pub type c_uchar = u8;
+                pub type c_short = i16;
+                pub type c_ushort = u16;
+                pub type c_int = i32;
+                pub type c_uint = u32;
+                pub type c_long = i64;
+                pub type c_ulong = u64;
+                pub type c_float = f32;
+                pub type c_double = f64;
+                pub type size_t = u64;
+                pub type ptrdiff_t = i64;
+                pub type clock_t = c_ulong;
+                pub type time_t = i64;
+                pub type suseconds_t = c_long;
+                pub type wchar_t = c_int;
+            }
+            pub mod c99 {
+                pub type c_longlong = i64;
+                pub type c_ulonglong = u64;
+                pub type intptr_t = int;
+                pub type uintptr_t = uint;
+            }
+            pub mod posix88 {
+                pub type off_t = i64;
+                pub type dev_t = i32;
+                pub type ino_t = u64;
+                pub type pid_t = i32;
+                pub type uid_t = u32;
+                pub type gid_t = u32;
+                pub type useconds_t = u32;
+                pub type mode_t = u32;
+                pub type ssize_t = i64;
+            }
+            pub mod posix01 {
+                use libc::types::common::c95::{c_void};
+                use libc::types::common::c99::{uint8_t, uint32_t, int32_t};
+                use libc::types::os::arch::c95::{c_long, time_t};
+                use libc::types::os::arch::posix88::{dev_t, gid_t, ino_t};
+                use libc::types::os::arch::posix88::{mode_t, off_t};
+                use libc::types::os::arch::posix88::{uid_t};
+
+                pub type nlink_t = u32;
+                pub struct stat {
+                    st_mode: mode_t,
+                    st_dev: dev_t,
+                    st_ino: ino_t,
+                    st_nlink: nlink_t,
+                    st_uid: uid_t,
+                    st_gid: gid_t,
+                    st_rdev: dev_t,
+                    st_atime: time_t,
+                    st_atimensec: c_long,
+                    st_mtime: time_t,
+                    st_mtimensec: c_long,
+                    st_ctime: time_t,
+                    st_ctimensec: c_long,
+                    st_size: off_t,
+                    st_blocks: i64,
+                    st_blksize: u32,
+                    st_flags: u32,
+                    st_gen: u32,
+                    __st_birthtime: time_t,
+                    __st_birthtimensec: c_long,
+                }
+
+                pub struct utimbuf {
+                    actime: time_t,
+                    modtime: time_t,
+                }
+
+                pub type pthread_attr_t = *c_void;
+            }
+            pub mod posix08 {
+            }
+            pub mod bsd44 {
+            }
+            pub mod extra {
+            }
+        }
+    }
+
     #[cfg(target_os = "win32")]
     pub mod os {
         pub mod common {
@@ -2567,6 +2765,7 @@ pub mod consts {
     }
 
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     pub mod os {
         pub mod c95 {
             use types::os::arch::c95::{c_int, c_uint};
@@ -2589,6 +2788,7 @@ pub mod consts {
         }
         pub mod c99 {
         }
+        #[cfg(target_os = "freebsd")]
         pub mod posix88 {
             use types::common::c95::c_void;
             use types::os::arch::c95::c_int;
@@ -2759,6 +2959,169 @@ pub mod consts {
             pub static EASYNC : c_int = 99;
             pub static ELAST : c_int = 99;
         }
+        #[cfg(target_os = "openbsd")]
+        pub mod posix88 {
+            use libc::types::common::c95::c_void;
+            use libc::types::os::arch::c95::c_int;
+
+            pub static O_RDONLY : c_int = 0;
+            pub static O_WRONLY : c_int = 1;
+            pub static O_RDWR : c_int = 2;
+            pub static O_APPEND : c_int = 8;
+            pub static O_CREAT : c_int = 512;
+            pub static O_EXCL : c_int = 2048;
+            pub static O_TRUNC : c_int = 1024;
+            pub static S_IFIFO : c_int = 4096;
+            pub static S_IFCHR : c_int = 8192;
+            pub static S_IFBLK : c_int = 24576;
+            pub static S_IFDIR : c_int = 16384;
+            pub static S_IFREG : c_int = 32768;
+            pub static S_IFLNK : c_int = 40960;
+            pub static S_IFMT : c_int = 61440;
+            pub static S_IEXEC : c_int = 64;
+            pub static S_IWRITE : c_int = 128;
+            pub static S_IREAD : c_int = 256;
+            pub static S_IRWXU : c_int = 448;
+            pub static S_IXUSR : c_int = 64;
+            pub static S_IWUSR : c_int = 128;
+            pub static S_IRUSR : c_int = 256;
+            pub static F_OK : c_int = 0;
+            pub static R_OK : c_int = 4;
+            pub static W_OK : c_int = 2;
+            pub static X_OK : c_int = 1;
+            pub static STDIN_FILENO : c_int = 0;
+            pub static STDOUT_FILENO : c_int = 1;
+            pub static STDERR_FILENO : c_int = 2;
+            pub static F_LOCK : c_int = 1;
+            pub static F_TEST : c_int = 3;
+            pub static F_TLOCK : c_int = 2;
+            pub static F_ULOCK : c_int = 0;
+            pub static SIGHUP : c_int = 1;
+            pub static SIGINT : c_int = 2;
+            pub static SIGQUIT : c_int = 3;
+            pub static SIGILL : c_int = 4;
+            pub static SIGABRT : c_int = 6;
+            pub static SIGFPE : c_int = 8;
+            pub static SIGKILL : c_int = 9;
+            pub static SIGSEGV : c_int = 11;
+            pub static SIGPIPE : c_int = 13;
+            pub static SIGALRM : c_int = 14;
+            pub static SIGTERM : c_int = 15;
+
+            pub static PROT_NONE : c_int = 0;
+            pub static PROT_READ : c_int = 1;
+            pub static PROT_WRITE : c_int = 2;
+            pub static PROT_EXEC : c_int = 4;
+
+            pub static MAP_FILE : c_int = 0x0000;
+            pub static MAP_SHARED : c_int = 0x0001;
+            pub static MAP_PRIVATE : c_int = 0x0002;
+            pub static MAP_FIXED : c_int = 0x0010;
+            pub static MAP_ANON : c_int = 0x1000;
+
+            pub static MAP_FAILED : *c_void = -1 as *c_void;
+
+            pub static MCL_CURRENT : c_int = 0x0001;
+            pub static MCL_FUTURE : c_int = 0x0002;
+
+            pub static MS_SYNC : c_int = 0x0002;
+            pub static MS_ASYNC : c_int = 0x0001;
+            pub static MS_INVALIDATE : c_int = 0x0004;
+
+            pub static EPERM : c_int = 1;
+            pub static ENOENT : c_int = 2;
+            pub static ESRCH : c_int = 3;
+            pub static EINTR : c_int = 4;
+            pub static EIO : c_int = 5;
+            pub static ENXIO : c_int = 6;
+            pub static E2BIG : c_int = 7;
+            pub static ENOEXEC : c_int = 8;
+            pub static EBADF : c_int = 9;
+            pub static ECHILD : c_int = 10;
+            pub static EDEADLK : c_int = 11;
+            pub static ENOMEM : c_int = 12;
+            pub static EACCES : c_int = 13;
+            pub static EFAULT : c_int = 14;
+            pub static ENOTBLK : c_int = 15;
+            pub static EBUSY : c_int = 16;
+            pub static EEXIST : c_int = 17;
+            pub static EXDEV : c_int = 18;
+            pub static ENODEV : c_int = 19;
+            pub static ENOTDIR : c_int = 20;
+            pub static EISDIR : c_int = 21;
+            pub static EINVAL : c_int = 22;
+            pub static ENFILE : c_int = 23;
+            pub static EMFILE : c_int = 24;
+            pub static ENOTTY : c_int = 25;
+            pub static ETXTBSY : c_int = 26;
+            pub static EFBIG : c_int = 27;
+            pub static ENOSPC : c_int = 28;
+            pub static ESPIPE : c_int = 29;
+            pub static EROFS : c_int = 30;
+            pub static EMLINK : c_int = 31;
+            pub static EPIPE : c_int = 32;
+            pub static EDOM : c_int = 33;
+            pub static ERANGE : c_int = 34;
+            pub static EAGAIN : c_int = 35;
+            pub static EWOULDBLOCK : c_int = 35;
+            pub static EINPROGRESS : c_int = 36;
+            pub static EALREADY : c_int = 37;
+            pub static ENOTSOCK : c_int = 38;
+            pub static EDESTADDRREQ : c_int = 39;
+            pub static EMSGSIZE : c_int = 40;
+            pub static EPROTOTYPE : c_int = 41;
+            pub static ENOPROTOOPT : c_int = 42;
+            pub static EPROTONOSUPPORT : c_int = 43;
+            pub static ESOCKTNOSUPPORT : c_int = 44;
+            pub static EOPNOTSUPP : c_int = 45;
+            pub static EPFNOSUPPORT : c_int = 46;
+            pub static EAFNOSUPPORT : c_int = 47;
+            pub static EADDRINUSE : c_int = 48;
+            pub static EADDRNOTAVAIL : c_int = 49;
+            pub static ENETDOWN : c_int = 50;
+            pub static ENETUNREACH : c_int = 51;
+            pub static ENETRESET : c_int = 52;
+            pub static ECONNABORTED : c_int = 53;
+            pub static ECONNRESET : c_int = 54;
+            pub static ENOBUFS : c_int = 55;
+            pub static EISCONN : c_int = 56;
+            pub static ENOTCONN : c_int = 57;
+            pub static ESHUTDOWN : c_int = 58;
+            pub static ETOOMANYREFS : c_int = 59;
+            pub static ETIMEDOUT : c_int = 60;
+            pub static ECONNREFUSED : c_int = 61;
+            pub static ELOOP : c_int = 62;
+            pub static ENAMETOOLONG : c_int = 63;
+            pub static EHOSTDOWN : c_int = 64;
+            pub static EHOSTUNREACH : c_int = 65;
+            pub static ENOTEMPTY : c_int = 66;
+            pub static EPROCLIM : c_int = 67;
+            pub static EUSERS : c_int = 68;
+            pub static EDQUOT : c_int = 69;
+            pub static ESTALE : c_int = 70;
+            pub static EREMOTE : c_int = 71;
+            pub static EBADRPC : c_int = 72;
+            pub static ERPCMISMATCH : c_int = 73;
+            pub static EPROGUNAVAIL : c_int = 74;
+            pub static EPROGMISMATCH : c_int = 75;
+            pub static EPROCUNAVAIL : c_int = 76;
+            pub static ENOLCK : c_int = 77;
+            pub static ENOSYS : c_int = 78;
+            pub static EFTYPE : c_int = 79;
+            pub static EAUTH : c_int = 80;
+            pub static ENEEDAUTH : c_int = 81;
+            pub static EIPSEC : c_int = 82;
+            pub static ENOATTR : c_int = 83;
+            pub static EILSEQ : c_int = 84;
+            pub static ENOMEDIUM : c_int = 85;
+            pub static EMEDIUMTYPE : c_int = 86;
+            pub static EOVERFLOW : c_int = 87;
+            pub static ECANCELED : c_int = 88;
+            pub static EIDRM : c_int = 89;
+            pub static ENOMSG : c_int = 90;
+            pub static ENOTSUP : c_int = 91;
+            pub static ELAST : c_int = 91;
+        }
         pub mod posix01 {
             use types::os::arch::c95::{c_int, size_t};
 
@@ -2772,7 +3135,12 @@ pub mod consts {
             pub static GLOB_MARK     : c_int = 0x0008;
             pub static GLOB_NOCHECK  : c_int = 0x0010;
             pub static GLOB_NOSORT   : c_int = 0x0020;
+
+            #[cfg(target_os = "freebsd")]
             pub static GLOB_NOESCAPE : c_int = 0x2000;
+
+            #[cfg(target_os = "openbsd")]
+            pub static GLOB_NOESCAPE : c_int = 0x1000;
 
             pub static GLOB_NOSPACE  : c_int = -1;
             pub static GLOB_ABORTED  : c_int = -2;
@@ -2784,6 +3152,7 @@ pub mod consts {
             pub static POSIX_MADV_WILLNEED : c_int = 3;
             pub static POSIX_MADV_DONTNEED : c_int = 4;
 
+            // should be in sysconf? freebsd specific
             pub static _SC_IOV_MAX : c_int = 56;
             pub static _SC_GETGR_R_SIZE_MAX : c_int = 70;
             pub static _SC_GETPW_R_SIZE_MAX : c_int = 71;
@@ -2815,17 +3184,14 @@ pub mod consts {
 
             pub static PTHREAD_CREATE_JOINABLE: c_int = 0;
             pub static PTHREAD_CREATE_DETACHED: c_int = 1;
-
-            #[cfg(target_arch = "arm")]
-            pub static PTHREAD_STACK_MIN: size_t = 4096;
-
-            #[cfg(target_arch = "mips")]
-            #[cfg(target_arch = "x86")]
-            #[cfg(target_arch = "x86_64")]
             pub static PTHREAD_STACK_MIN: size_t = 2048;
 
             pub static CLOCK_REALTIME: c_int = 0;
+
+            #[cfg(target_os = "freebsd")]
             pub static CLOCK_MONOTONIC: c_int = 4;
+            #[cfg(target_os = "openbsd")]
+            pub static CLOCK_MONOTONIC: c_int = 3;
 
             pub static WNOHANG: c_int = 1;
         }
@@ -2839,13 +3205,26 @@ pub mod consts {
             pub static MADV_SEQUENTIAL : c_int = 2;
             pub static MADV_WILLNEED : c_int = 3;
             pub static MADV_DONTNEED : c_int = 4;
+
+            #[cfg(target_os = "freebsd")]
             pub static MADV_FREE : c_int = 5;
+            #[cfg(target_os = "freebsd")]
             pub static MADV_NOSYNC : c_int = 6;
+            #[cfg(target_os = "freebsd")]
             pub static MADV_AUTOSYNC : c_int = 7;
+            #[cfg(target_os = "freebsd")]
             pub static MADV_NOCORE : c_int = 8;
+            #[cfg(target_os = "freebsd")]
             pub static MADV_CORE : c_int = 9;
+            #[cfg(target_os = "freebsd")]
             pub static MADV_PROTECT : c_int = 10;
 
+            #[cfg(target_os = "openbsd")]
+            pub static MADV_SPACEAVAIL : c_int = 5;
+            #[cfg(target_os = "openbsd")]
+            pub static MADV_FREE : c_int = 6;
+
+            // freebsd specific
             pub static MINCORE_INCORE : c_int =  0x1;
             pub static MINCORE_REFERENCED : c_int = 0x2;
             pub static MINCORE_MODIFIED : c_int = 0x4;
@@ -2854,7 +3233,12 @@ pub mod consts {
             pub static MINCORE_SUPER : c_int = 0x20;
 
             pub static AF_INET: c_int = 2;
+
+            #[cfg(target_os = "freebsd")]
             pub static AF_INET6: c_int = 28;
+            #[cfg(target_os = "openbsd")]
+            pub static AF_INET6: c_int = 24;
+
             pub static AF_UNIX: c_int = 1;
             pub static SOCK_STREAM: c_int = 1;
             pub static SOCK_DGRAM: c_int = 2;
@@ -2880,6 +3264,7 @@ pub mod consts {
             pub static SHUT_WR: c_int = 1;
             pub static SHUT_RDWR: c_int = 2;
         }
+        // TODO
         pub mod extra {
             use types::os::arch::c95::c_int;
 
@@ -3620,6 +4005,7 @@ pub mod funcs {
     #[cfg(target_os = "android")]
     #[cfg(target_os = "macos")]
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     pub mod posix88 {
         pub mod stat_ {
             use types::os::arch::c95::{c_char, c_int};
@@ -3632,6 +4018,7 @@ pub mod funcs {
 
                 #[cfg(target_os = "linux")]
                 #[cfg(target_os = "freebsd")]
+                #[cfg(target_os = "openbsd")]
                 #[cfg(target_os = "android")]
                 pub fn fstat(fildes: c_int, buf: *mut stat) -> c_int;
 
@@ -3644,6 +4031,7 @@ pub mod funcs {
 
                 #[cfg(target_os = "linux")]
                 #[cfg(target_os = "freebsd")]
+                #[cfg(target_os = "openbsd")]
                 #[cfg(target_os = "android")]
                 pub fn stat(path: *c_char, buf: *mut stat) -> c_int;
 
@@ -3818,6 +4206,7 @@ pub mod funcs {
     #[cfg(target_os = "android")]
     #[cfg(target_os = "macos")]
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     pub mod posix01 {
         pub mod stat_ {
             use types::os::arch::c95::{c_char, c_int};
@@ -3826,6 +4215,7 @@ pub mod funcs {
             extern {
                 #[cfg(target_os = "linux")]
                 #[cfg(target_os = "freebsd")]
+                #[cfg(target_os = "openbsd")]
                 #[cfg(target_os = "android")]
                 pub fn lstat(path: *c_char, buf: *mut stat) -> c_int;
 
@@ -3937,6 +4327,7 @@ pub mod funcs {
     #[cfg(target_os = "android")]
     #[cfg(target_os = "macos")]
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     pub mod posix08 {
         pub mod unistd {
         }
@@ -4017,6 +4408,7 @@ pub mod funcs {
 
     #[cfg(target_os = "macos")]
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     pub mod bsd44 {
         use types::common::c95::{c_void};
         use types::os::arch::c95::{c_char, c_uchar, c_int, c_uint, size_t};
@@ -4029,12 +4421,14 @@ pub mod funcs {
                           newp: *c_void,
                           newlen: size_t)
                           -> c_int;
+            #[not(cfg(target_os = "openbsd"))]
             pub fn sysctlbyname(name: *c_char,
                                 oldp: *mut c_void,
                                 oldlenp: *mut size_t,
                                 newp: *c_void,
                                 newlen: size_t)
                                 -> c_int;
+            #[not(cfg(target_os = "openbsd"))]
             pub fn sysctlnametomib(name: *c_char,
                                    mibp: *mut c_int,
                                    sizep: *mut size_t)
@@ -4079,9 +4473,7 @@ pub mod funcs {
     }
 
     #[cfg(target_os = "freebsd")]
-    pub mod extra {
-    }
-
+    #[cfg(target_os = "openbsd")]
     #[cfg(target_os = "linux")]
     #[cfg(target_os = "android")]
     pub mod extra {
