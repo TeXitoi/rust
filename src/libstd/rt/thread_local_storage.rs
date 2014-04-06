@@ -50,6 +50,10 @@ type pthread_key_t = ::libc::c_ulong;
 #[allow(non_camel_case_types)] // foreign type
 type pthread_key_t = ::libc::c_uint;
 
+#[cfg(target_os="openbsd")]
+#[allow(non_camel_case_types)] // foreign type
+type pthread_key_t = ::libc::c_int;
+
 #[cfg(unix)]
 extern {
     fn pthread_key_create(key: *mut pthread_key_t, dtor: *u8) -> c_int;

@@ -834,9 +834,9 @@ pub mod types {
     pub mod os {
         pub mod common {
             pub mod posix01 {
-                use libc::types::common::c95::{c_void};
-                use libc::types::os::arch::c95::{c_char, c_int,
-                                                 time_t, suseconds_t, c_long};
+                use types::common::c95::{c_void};
+                use types::os::arch::c95::{c_char, c_int,
+                                           time_t, suseconds_t, c_long};
 
                 pub type pthread_t = *c_void;
 
@@ -874,7 +874,7 @@ pub mod types {
                 pub type sighandler_t = *c_void;
             }
             pub mod bsd44 {
-                use libc::types::os::arch::c95::{c_char, c_uchar, c_int, c_uint};
+                use types::os::arch::c95::{c_char, c_uchar, c_int};
 
                 pub type socklen_t = u32;
                 pub type sa_family_t = u8;
@@ -981,12 +981,11 @@ pub mod types {
                 pub type ssize_t = i64;
             }
             pub mod posix01 {
-                use libc::types::common::c95::{c_void};
-                use libc::types::common::c99::{uint8_t, uint32_t, int32_t};
-                use libc::types::os::arch::c95::{c_long, time_t};
-                use libc::types::os::arch::posix88::{dev_t, gid_t, ino_t};
-                use libc::types::os::arch::posix88::{mode_t, off_t};
-                use libc::types::os::arch::posix88::{uid_t};
+                use types::common::c95::{c_void};
+                use types::os::arch::c95::{c_long, time_t};
+                use types::os::arch::posix88::{dev_t, gid_t, ino_t};
+                use types::os::arch::posix88::{mode_t, off_t};
+                use types::os::arch::posix88::{uid_t};
 
                 pub type nlink_t = u32;
                 pub struct stat {
@@ -2961,8 +2960,8 @@ pub mod consts {
         }
         #[cfg(target_os = "openbsd")]
         pub mod posix88 {
-            use libc::types::common::c95::c_void;
-            use libc::types::os::arch::c95::c_int;
+            use types::common::c95::c_void;
+            use types::os::arch::c95::c_int;
 
             pub static O_RDONLY : c_int = 0;
             pub static O_WRONLY : c_int = 1;
@@ -4411,7 +4410,9 @@ pub mod funcs {
     #[cfg(target_os = "openbsd")]
     pub mod bsd44 {
         use types::common::c95::{c_void};
-        use types::os::arch::c95::{c_char, c_uchar, c_int, c_uint, size_t};
+        #[cfg(not(target_os = "openbsd"))]
+        use types::os::arch::c95::c_char;
+        use types::os::arch::c95::{c_uchar, c_int, c_uint, size_t};
 
         extern {
             pub fn sysctl(name: *c_int,
@@ -4421,14 +4422,14 @@ pub mod funcs {
                           newp: *c_void,
                           newlen: size_t)
                           -> c_int;
-            #[not(cfg(target_os = "openbsd"))]
+            #[cfg(not(target_os = "openbsd"))]
             pub fn sysctlbyname(name: *c_char,
                                 oldp: *mut c_void,
                                 oldlenp: *mut size_t,
                                 newp: *c_void,
                                 newlen: size_t)
                                 -> c_int;
-            #[not(cfg(target_os = "openbsd"))]
+            #[cfg(not(target_os = "openbsd"))]
             pub fn sysctlnametomib(name: *c_char,
                                    mibp: *mut c_int,
                                    sizep: *mut size_t)

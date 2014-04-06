@@ -417,6 +417,7 @@ pub fn dll_filename(base: &str) -> ~str {
 pub fn self_exe_name() -> Option<Path> {
 
     #[cfg(target_os = "freebsd")]
+    #[cfg(target_os = "openbsd")]
     fn load_self() -> Option<~[u8]> {
         unsafe {
             use libc::funcs::bsd44::*;
